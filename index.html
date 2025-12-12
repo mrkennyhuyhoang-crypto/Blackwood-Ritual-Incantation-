@@ -2,259 +2,92 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Morse Soundtrack — Play on Load</title>
   <style>
 @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
-.morse-blinker{width:120px;height:120px;border-radius:50%;margin:20px auto;background:#111;box-shadow:0 0 20px rgba(255,0,0,0.0);transition: box-shadow 0.05s ease, background 0.05s ease;} .morse-blinker.active{background:#ff0000;box-shadow:0 0 35px rgba(255,0,0,0.9);} 
-    :root{--bg:#0b0b0f;--fg:#e6eef8;--muted:#9fb0c8}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    body{display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#02040a 0%, #071229 100%);color:var(--fg)}
-    .card{width:880px;max-width:94vw;padding:28px;border-radius:14px;background:rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(2,6,23,0.6);backdrop-filter: blur(6px)}
-    h1{margin:0 0 8px;font-size:20px}
-    p{margin:0 0 16px;color:var(--muted)}
-    .controls{display:flex;gap:10px;align-items:center}
-    button{padding:8px 12px;border-radius:8px;border:0;background:#1b6cff;color:white;font-weight:600;cursor:pointer}
-    button.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--fg)}
-    .status{margin-left:auto;color:var(--muted);font-size:14px}
-    .decoded{margin-top:16px;padding:12px;border-radius:10px;background:rgba(0,0,0,0.2);font-family:monospace;letter-spacing:0.6px}
-    .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(120deg,rgba(2,6,23,0.55),rgba(8,12,30,0.7));backdrop-filter:blur(2px)}
-    .overlay .prompt{background:transparent;padding:28px;border-radius:12px;text-align:center}
-    .overlay h2{color:var(--fg);margin:0 0 12px}
-    .overlay p{color:var(--muted);margin:0 0 18px}
-  </style>
+
+:root { --bg:#0b0b0f; --fg:#e6eef8; --muted:#9fb0c8; }
+html,body { height:100%; margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial; }
+body { display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#02040a 0%, #071229 100%); color:var(--fg); }
+.card { width:90vw; max-width:880px; padding:20px; border-radius:14px; background:rgba(255,255,255,0.03); box-shadow:0 8px 30px rgba(2,6,23,0.6); backdrop-filter: blur(6px); box-sizing: border-box; }
+h1 { margin:0 0 8px; font-size:6vw; max-font-size:48px; }
+p { margin:0 0 16px; color:var(--muted); }
+.controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+button { padding:8px 12px; border-radius:8px; border:0; background:#1b6cff; color:white; font-weight:600; cursor:pointer; }
+button.ghost { background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--fg); }
+.status { margin-left:auto; color:var(--muted); font-size:14px; }
+.decoded { margin-top:16px; padding:12px; border-radius:10px; background:rgba(0,0,0,0.2); font-family:monospace; letter-spacing:0.6px; }
+.morse-blinker { width:25vw; max-width:120px; height:25vw; max-height:120px; border-radius:50%; margin:20px auto; background:#111; box-shadow:0 0 20px rgba(255,0,0,0.0); transition: box-shadow 0.05s ease, background 0.05s ease; }
+.morse-blinker.active { background:#ff0000; box-shadow:0 0 35px rgba(255,0,0,0.9); }
+.overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:linear-gradient(120deg,rgba(2,6,23,0.55),rgba(8,12,30,0.7)); backdrop-filter:blur(2px); }
+.overlay .prompt { background:transparent; padding:28px; border-radius:12px; text-align:center; }
+.overlay h2 { color:var(--fg); margin:0 0 12px; }
+.overlay p { color:var(--muted); margin:0 0 18px; }
+</style>
 </head>
 <body>
-  <h1 style="font-family: 'UnifrakturMaguntia', cursive; font-size: 48px; text-align:center; color:#e6eef8; margin-top:20px;">Blackwood Ritual Incantation</h1>
-  <div class="card">
-    <div class="morse-blinker" id="blinker"></div>
-    <h1>Morse Soundtrack — Autoplay (with browser fallback)</h1>
-    <p>This page produces a short audio soundtrack that plays the message in Morse code. If the browser blocks autoplay, click <strong>Play</strong>.</p>
-
-    <div class="controls">
-      <button id="play">Play</button>
-      <button id="stop" class="ghost">Stop</button>
-      <label style="margin-left:8px">Speed: <input id="speed" type="range" min="5" max="40" value="20"></label>
-      <div class="status" id="status">Ready</div>
-    </div>
-
-    <div class="decoded" id="decoded">Morse sequence completed.</div>
+<h1 style="font-family: 'UnifrakturMaguntia', cursive; font-size:48px; text-align:center; color:#e6eef8; margin-top:20px;">Blackwood Ritual Incantation</h1>
+<div class="card">
+  <div class="morse-blinker" id="blinker"></div>
+  <h1>Morse Soundtrack — Autoplay (with browser fallback)</h1>
+  <p>This page produces a short audio soundtrack that plays the message in Morse code. If the browser blocks autoplay, click <strong>Play</strong>.</p>
+  <div class="controls">
+    <button id="play">Play</button>
+    <button id="stop" class="ghost">Stop</button>
+    <label style="margin-left:8px">Speed: <input id="speed" type="range" min="5" max="40" value="20"></label>
+    <div class="status" id="status">Ready</div>
   </div>
-
-  <div id="autoplayOverlay" class="overlay" style="display:none">
-    <div class="prompt">
-      <h2>Click to start audio</h2>
-      <p>Your browser requires a gesture to start audio. Click the button to play the Morse soundtrack.</p>
-      <button id="overlayPlay">Begin</button>
-    </div>
+  <div class="decoded" id="decoded">Morse sequence completed.</div>
+</div>
+<div id="autoplayOverlay" class="overlay" style="display:none">
+  <div class="prompt">
+    <h2>Click to start audio</h2>
+    <p>Your browser requires a gesture to start audio. Click the button to play the Morse soundtrack.</p>
+    <button id="overlayPlay">Begin</button>
   </div>
-
-  <script>
-    // === Morse Soundtrack Script (refactored to fix play/stop & add QR) ===
-    // Note: the plaintext message is intentionally not shown on the page.
-    const plainMessage = "Ceaser is a great emperor. He has kept secrets for 3 generations.";
-
-    const MORSE_MAP = {
-      'a':'.-','b':'-...','c':'-.-.','d':'-..','e':'.','f':'..-.','g':'--.','h':'....','i':'..','j':'.---','k':'-.-','l':'.-..','m':'--','n':'-.','o':'---','p':'.--.','q':'--.-','r':'.-.','s':'...','t':'-','u':'..-','v':'...-','w':'.--','x':'-..-','y':'-.--','z':'--..',
-      '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.',
-      '.':'.-.-.-',',':'--..--','?':'..--..','!':'-.-.--','/':'-..-.','(':'-.--.',')':'-.--.-','&':'.-...',';':'-.-.-.','=':'-...-','+':'.-.-.','-':'-....-','_':'..--.-','"':'.-..-.',"'":'.----.'
-    };
-
-    function textToMorse(text){
-      return text.toLowerCase().split('').map(ch => {
-        if (ch === ' ') return '/';
-        return MORSE_MAP[ch] || '';
-      }).join(' ');
-    }
-
-    const morseSequence = textToMorse(plainMessage);
-
-    // Elements
-    const playBtn = document.getElementById('play');
-    const stopBtn = document.getElementById('stop');
-    const speed = document.getElementById('speed');
-    const status = document.getElementById('status');
-    const decoded = document.getElementById('decoded');
-    const overlay = document.getElementById('autoplayOverlay');
-    const overlayPlay = document.getElementById('overlayPlay');
-    const blinker = document.getElementById('blinker');
-
-    // Display fictional URL banner at top if not already present
-    
-
-    // Add QR code area (links to fictional URL)
-    
-
-    // Audio state
-    let audioCtx = null;
-    let masterGain = null;
-    let playing = false;
-    let scheduledToneEvents = []; // will hold {start, duration}
-    window._blinkEvents = window._blinkEvents || [];
-
-    // compute timing from WPM
-    function dotDurationFromWpm(wpm){
-      // standard PARIS timing: dot = 1.2 / wpm
-      return 1.2 / wpm;
-    }
-
-    // schedules tones and blink events; returns total duration (seconds)
-    function scheduleMorse(morse, wpm){
-      // clear previous tone events
-      scheduledToneEvents = [];
-      // clear blink events
-      if (window._blinkEvents){ window._blinkEvents.forEach(id=>clearTimeout(id)); window._blinkEvents = []; }
-
-      const dot = dotDurationFromWpm(wpm);
-      const dash = dot * 3;
-      const intraCharGap = dot;
-      const letterGap = dot * 3;
-      const wordGap = dot * 7;
-
-      const now = audioCtx.currentTime + 0.06; // small latency buffer
-      let t = now;
-
-      const words = morse.split(' / ');
-      words.forEach((word, wi) => {
-        const letters = word.trim().split(' ');
-        letters.forEach((letter, li) => {
-          for (let i = 0; i < letter.length; i++){
-            const sym = letter[i];
-            if (sym === '.'){
-              scheduledToneEvents.push({start:t, duration:dot});
-              t += dot;
-            } else if (sym === '-'){
-              scheduledToneEvents.push({start:t, duration:dash});
-              t += dash;
-            }
-            if (i < letter.length - 1) t += intraCharGap;
-          }
-          if (li < letters.length - 1) t += letterGap;
-        });
-        if (wi < words.length - 1) t += wordGap;
-      });
-
-      // now actually create oscillators for each scheduled tone, and schedule blinker events
-      scheduledToneEvents.forEach(ev => {
-        const o = audioCtx.createOscillator();
-        const g = audioCtx.createGain();
-        o.type = 'sine';
-        o.frequency.value = 650;
-        o.connect(g);
-        g.connect(masterGain);
-        const attack = Math.min(0.02, ev.duration*0.25);
-        const release = Math.min(0.03, ev.duration*0.25);
-        g.gain.setValueAtTime(0, ev.start);
-        g.gain.linearRampToValueAtTime(1, ev.start + attack);
-        g.gain.setValueAtTime(1, ev.start + ev.duration - release);
-        g.gain.linearRampToValueAtTime(0, ev.start + ev.duration);
-        o.start(ev.start);
-        o.stop(ev.start + ev.duration + 0.05);
-
-        // schedule visual blinker (use setTimeout based on audioCtx currentTime)
-        
-      });
-
-      return (scheduledToneEvents.length ? (scheduledToneEvents[scheduledToneEvents.length-1].start + scheduledToneEvents[scheduledToneEvents.length-1].duration - (audioCtx.currentTime + 0.06)) : 0);
-    }
-
-    
-    // Visual blink loop (keeps blinker perfectly in sync with audioCtx.currentTime)
-    let blinkLoopId = null;
-    function blinkUpdate(){
-      if (!playing || !audioCtx) return;
-      const now = audioCtx.currentTime;
-      let active = false;
-      for (let i = 0; i < scheduledToneEvents.length; i++){
-        const ev = scheduledToneEvents[i];
-        if (now >= ev.start && now < ev.start + ev.duration){ active = true; break; }
-      }
-      if (active) blinker.classList.add('active'); else blinker.classList.remove('active');
-      blinkLoopId = requestAnimationFrame(blinkUpdate);
-    }
-    function startBlinkLoop(){ if (blinkLoopId) cancelAnimationFrame(blinkLoopId); blinkUpdate(); }
-    function stopBlinkLoop(){ if (blinkLoopId) cancelAnimationFrame(blinkLoopId); blinkLoopId = null; blinker.classList.remove('active'); }
-
-    function startPlayback(wpm){
-      if (playing) return;
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.25;
-        masterGain.connect(audioCtx.destination);
-      } else if (audioCtx.state === 'suspended'){
-        audioCtx.resume();
-      }
-
-      // schedule morse
-      const duration = scheduleMorse(morseSequence, wpm);
-      playing = true;
-      status.textContent = 'Playing — ' + Math.round(duration*10)/10 + 's';
-      // start visual blink loop
-      startBlinkLoop();
-      decoded.textContent = 'Morse sequence completed.'; // kept generic, no reveal
-
-      // clear playing flag when done
-      setTimeout(()=>{
-        playing = false;
-        // ensure blinker off
-        stopBlinkLoop();
-        status.textContent = 'Finished';
-      }, Math.max(0, duration*1000) + 120);
-    }
-
-    function stopPlayback(){
-      if (!audioCtx) return;
-      // cancel pending blink events
-      stopBlinkLoop();
-      try{ audioCtx.close(); }catch(e){}
-      audioCtx = null;
-      masterGain = null;
-      playing = false;
-      scheduledToneEvents = [];
-      status.textContent = 'Stopped';
-    }
-
-    // UI wiring
-    playBtn.addEventListener('click', ()=>{
-      // user gesture ensures audio can start
-      try{
-        startPlayback(parseInt(speed.value));
-      }catch(e){
-        console.error('Start failed:', e);
-        // fallback: show overlay
-        overlay.style.display = 'flex';
-      }
-    });
-
-    stopBtn.addEventListener('click', ()=>{
-      stopPlayback();
-    });
-
-    // overlay play button
-    overlayPlay.addEventListener('click', ()=>{
-      overlay.style.display = 'none';
-      startPlayback(parseInt(speed.value));
-    });
-
-    // If speed changes while playing, restart playback so timing and blinker stay in sync
-    speed.addEventListener('input', ()=>{
-      status.textContent = 'Ready — ' + speed.value + ' WPM';
-      if (playing){
-        // restart from beginning at new speed
-        stopPlayback();
-        // small delay to ensure audioContext closes on some browsers
-        setTimeout(()=> startPlayback(parseInt(speed.value)), 150);
-      }
-    });
-
-    // Attempt to autoplay silently to check if audio is allowed — if blocked, overlay remains hidden until user interacts
-    window.addEventListener('load', ()=>{
-      // Do not force playback. Keep overlay hidden. Only create audio context on user gesture.
-      status.textContent = 'Ready — ' + speed.value + ' WPM';
-    });
-
-    console.log('Morse sequence length (chars):', morseSequence.length);
-  </script>
+</div>
+<script>
+const plainMessage = "Ceaser is a great emperor. He has kept secrets for 3 generations.";
+const MORSE_MAP = {
+  'a':'.-','b':'-...','c':'-.-.','d':'-..','e':'.','f':'..-.','g':'--.','h':'....','i':'..','j':'.---','k':'-.-','l':'.-..','m':'--','n':'-.','o':'---','p':'.--.','q':'--.-','r':'.-.','s':'...','t':'-','u':'..-','v':'...-','w':'.--','x':'-..-','y':'-.--','z':'--..',
+  '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-','5':'.....','6':'-....','7':'--...','8':'---..','9':'----.',
+  '.':'.-.-.-',',':'--..--','?':'..--..','!':'-.-.--','/':'-..-.','(':'-.--.',')':'-.--.-','&':'.-...',';':'-.-.-.','=':'-...-','+':'.-.-.','-':'-....-','_':'..--.-','"':'.-..-.',''':'.----.'
+};
+function textToMorse(text){return text.toLowerCase().split('').map(ch => { if (ch === ' ') return '/'; return MORSE_MAP[ch] || ''; }).join(' ');}
+const morseSequence = textToMorse(plainMessage);
+const playBtn = document.getElementById('play');
+const stopBtn = document.getElementById('stop');
+const speed = document.getElementById('speed');
+const status = document.getElementById('status');
+const decoded = document.getElementById('decoded');
+const overlay = document.getElementById('autoplayOverlay');
+const overlayPlay = document.getElementById('overlayPlay');
+const blinker = document.getElementById('blinker');
+let audioCtx = null;
+let masterGain = null;
+let playing = false;
+let scheduledToneEvents = [];
+let blinkLoopId = null;
+function dotDurationFromWpm(wpm){return 1.2/wpm;}
+function scheduleMorse(morse,wpm){scheduledToneEvents=[];
+const dot=dotDurationFromWpm(wpm),dash=dot*3,intraCharGap=dot,letterGap=dot*3,wordGap=dot*7;
+const now=(audioCtx.currentTime||0)+0.06;let t=now;
+const words=morse.split(' / ');
+words.forEach((word,wi)=>{const letters=word.trim().split(' ');letters.forEach((letter,li)=>{for(let i=0;i<letter.length;i++){const sym=letter[i];if(sym==='.') scheduledToneEvents.push({start:t,duration:dot}),t+=dot;else if(sym==='-') scheduledToneEvents.push({start:t,duration:dash}),t+=dash;if(i<letter.length-1)t+=intraCharGap;}if(li<letters.length-1)t+=letterGap;}),wi<words.length-1&&(t+=wordGap);});
+scheduledToneEvents.forEach(ev=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=650;o.connect(g);g.connect(masterGain);const attack=Math.min(0.02,ev.duration*0.25),release=Math.min(0.03,ev.duration*0.25);g.gain.setValueAtTime(0,ev.start);g.gain.linearRampToValueAtTime(1,ev.start+attack);g.gain.setValueAtTime(1,ev.start+ev.duration-release);g.gain.linearRampToValueAtTime(0,ev.start+ev.duration);o.start(ev.start);o.stop(ev.start+ev.duration+0.05);});
+return scheduledToneEvents.length?(scheduledToneEvents[scheduledToneEvents.length-1].start+(scheduledToneEvents[scheduledToneEvents.length-1].duration)-(audioCtx.currentTime||0+0.06)):0;}
+function blinkUpdate(){if(!playing||!audioCtx)return;const now=audioCtx.currentTime;let active=false;for(let i=0;i<scheduledToneEvents.length;i++){const ev=scheduledToneEvents[i];if(now>=ev.start&&now<ev.start+ev.duration){active=true;break;}}active?blinker.classList.add('active'):blinker.classList.remove('active');blinkLoopId=requestAnimationFrame(blinkUpdate);}
+function startBlinkLoop(){if(blinkLoopId)cancelAnimationFrame(blinkLoopId);blinkUpdate();}
+function stopBlinkLoop(){if(blinkLoopId)cancelAnimationFrame(blinkLoopId);blinkLoopId=null;blinker.classList.remove('active');}
+function startPlayback(wpm){if(playing)return;if(!audioCtx){audioCtx=new(window.AudioContext||window.webkitAudioContext)();masterGain=audioCtx.createGain();masterGain.gain.value=0.25;masterGain.connect(audioCtx.destination);}else if(audioCtx.state==='suspended')audioCtx.resume();const duration=scheduleMorse(morseSequence,wpm);playing=true;status.textContent='Playing — '+Math.round(duration*10)/10+'s';startBlinkLoop();decoded.textContent='Morse sequence completed.';setTimeout(()=>{playing=false;stopBlinkLoop();status.textContent='Finished';},Math.max(0,duration*1000)+120);}
+function stopPlayback(){if(!audioCtx)return;stopBlinkLoop();try{audioCtx.close();}catch(e){}audioCtx=null;masterGain=null;playing=false;scheduledToneEvents=[];status.textContent='Stopped';}
+playBtn.addEventListener('click',()=>{try{startPlayback(parseInt(speed.value));}catch(e){console.error('Start failed:',e);overlay.style.display='flex';}});
+stopBtn.addEventListener('click',()=>{stopPlayback();});
+overlayPlay.addEventListener('click',()=>{overlay.style.display='none';startPlayback(parseInt(speed.value));});
+speed.addEventListener('input',()=>{status.textContent='Ready — '+speed.value+' WPM';if(playing){stopPlayback();setTimeout(()=>startPlayback(parseInt(speed.value)),150);}});
+window.addEventListener('load',()=>{status.textContent='Ready — '+speed.value+' WPM';});
+console.log('Morse sequence length (chars):',morseSequence.length);
+</script>
 </body>
 </html>
